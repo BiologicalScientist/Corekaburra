@@ -1,19 +1,26 @@
+#! /usr/bin/env python
 #### TODO CLI for find folder or check files present in pwd 
 #### output to defined folder or std out
 #### take GOI input (firect string/ file inojt?)
 #### check if files exist folders use os. library.
 
-GOI = "speA2" # set gene of interest (GOI) to user input
+#GOI = "speA2" # set gene of interest (GOI) to user input
 #GOI= "group_3687"
 
+import argparse
+import sys
+from os.path import exists
 
 
-def support_script():
+def support_script(args):
+    GOI = args.gene_of_interest
+    Input_file = args.input_file
+
     Gene_list = {}
     accessory_list = {} #set up accessory list dictionary
     core_list = {} # set up core list dictionary
     count_core = {} # have a count for the number of times a GOI occurs between a particular core pair
-    with open("core_core_accessory_gene_content.tsv", "r") as fp:
+    with open(Input_file, "r") as fp:
         #line = fp.readline()
         #cnt = 1
         #while line: # while loops sow for loops fast, switch to for.
@@ -58,5 +65,15 @@ def support_script():
         print(f"GOI {GOI} occurs between {core_pair_set} {count_core[core_pair_set]} times in your pangenome")
         #get result of occurences between core_core_pairs
     print(len(Gene_list))
+
+
+
 if __name__ == '__main__':
-    support_script()
+    parser = argparse.ArgumentParser(description="Summarise the location of a Gene of interest in the pangenome relative to core-core pairs defined by Corekaburra")
+    parser.add_argument("-if", "--input_file", 
+                        help="requires corekaburra core_core_accessory_gene_content.tsv", 
+                        type=str, required=True)
+    parser.add_argument("-goi", "--gene_of_interest", 
+                        help="the group name of the gene of interest from your pangenome", type=str, required=True)
+    args = parser.parse_args()
+    support_script(args)
