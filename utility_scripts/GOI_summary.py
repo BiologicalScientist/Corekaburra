@@ -1,11 +1,8 @@
 #! /usr/bin/env python
-#### TODO CLI for find folder or check files present in pwd 
+#### TODO CLI for find folder or check files present in pwd --DONE
 #### output to defined folder or std out
-#### take GOI input (firect string/ file inojt?)
+#### take GOI input (firect string/ file inojt?) --DONE
 #### check if files exist folders use os. library.
-
-#GOI = "speA2" # set gene of interest (GOI) to user input
-#GOI= "group_3687"
 
 import argparse
 import sys
@@ -20,10 +17,9 @@ def support_script(args):
     accessory_list = {} #set up accessory list dictionary
     core_list = {} # set up core list dictionary
     count_core = {} # have a count for the number of times a GOI occurs between a particular core pair
+    large_summary = []
+    small_summary = []
     with open(Input_file, "r") as fp:
-        #line = fp.readline()
-        #cnt = 1
-        #while line: # while loops sow for loops fast, switch to for.
         for line in fp.readlines():
             #print("Line {}: {}".format(cnt, line.strip()))
             line_list = (line.strip().split('\t'))
@@ -44,15 +40,16 @@ def support_script(args):
                     else: # if a novel core_core pair start the count
                         count_core[core_pair] = 1
                     ##TODO case where genome appears multiple times
-                    print("{} is an accessory gene between genes {} and {} in {}". format(GOI,core1,core2,genome))
-                
+                    #print("{} is an accessory gene between genes {} and {} in {}". format(GOI,core1,core2,genome))
+                    large_summary.append(str("{} is an accessory gene between genes {} and {} in {}". format(GOI,core1,core2,genome)))
                 elif (core1 == GOI or core2 == GOI):
                     ##TODO case where GOI is a core gene
                     ## TODO add f instead of format
-                    print("{} is a core gene between genes {} and {} in {}". format(GOI,core1,core2,genome))
-                
+                    print("{} is a core gene, you should look in the core-core pairs file instead". format(GOI))
+                    break
                 else :
                     print("This is weird your gene of interest {} is in the file but doesn't appear to be located in the expected columns of the table provided, make sure you have the correct corekaburra input file.".format(GOI))
+                    break
             #else:
                 
                 #print("your gene of interest {} doesn't appear to be located in the table provided, make sure you have the exact gene name provided in the pangenome output files.".format(GOI))
@@ -62,10 +59,20 @@ def support_script(args):
         #print(accessory_list)
         #print(count_core)
     for core_pair_set in count_core.keys():
-        print(f"GOI {GOI} occurs between {core_pair_set} {count_core[core_pair_set]} times in your pangenome")
-        #get result of occurences between core_core_pairs
-    print(len(Gene_list))
+        small_summary.append(str(f"GOI {GOI} occurs between {core_pair_set} {count_core[core_pair_set]} times in your pangenome"))
 
+        #get result of occurences between core_core_pairs
+    print(' ')
+    print(' ')
+    print(f"accessory GOI {GOI} occurs a total of {len(Gene_list)} times in your pangenome, in {len(count_core.keys())} different genomic locations")
+    #print(large_summary)
+    print(' ')
+    print(' ')
+    print('\n'.join(map(str, small_summary)))
+    print(' ')
+    print(' ')
+    print('for each genome the location is')
+    print('\n'.join(map(str, large_summary)))
 
 
 if __name__ == '__main__':
